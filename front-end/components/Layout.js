@@ -48,7 +48,7 @@ export default function Layout({ children }) {
         }`}
       >
         <div className="px-4 md:px-16">{children}</div>
-        {console.log(children)}
+        {/* {console.log(children)} */}
       </main>
     </>
   );
