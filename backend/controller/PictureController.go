@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	_ "go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	_ "go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"time"
@@ -63,30 +66,59 @@ func CreateImage() gin.HandlerFunc {
 	}
 }
 
-//func AddPicture(c *gin.Context) {
-//	var Car CarType
-//
-//	if err := c.ShouldBindJSON(&Car); err != nil {
-//		c.JSON(http.StatusBadRequest, gin.H{
-//			"status_code": http.StatusBadRequest,
-//			"data":        err.Error(),
-//		})
-//		return
-//	}
-//	//data := map[string]interface{}{
-//	//	"intValue":    1234,
-//	//	"boolValue":   true,
-//	//	"stringValue": "hello!",
-//	//	"dateValue":   time.Date(2022, 3, 2, 9, 10, 0, 0, time.UTC),
-//	//	"objectValue": map[string]interface{}{
-//	//		"arrayValue": []int{1, 2, 3, 4},
-//	//	},
-//	//}
-//	results := services.SavePicture(Car.Picture, Car.Location)
-//	//fmt.Println(Car)
-//
-//	c.JSON(
-//		http.StatusOK,
-//		gin.H{"status_code": http.StatusOK, "data": results},
-//	)
-//}
+func GetAllImage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		var image models.Picture
+
+		var images []models.Picture
+		cursor, err := imageCollection.Find(ctx, bson.D{})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
+			return
+		}
+		if err = cursor.All(ctx, &images); err != nil {
+			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
+			return
+		}
+		defer func(cursor *mongo.Cursor, ctx context.Context) {
+			err := cursor.Close(ctx)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
+				return
+			}
+		}(cursor, ctx)
+
+		for cursor.Next(ctx) {
+			err := cursor.Decode(&image)
+			if err != nil {
+				return
+			}
+			images = append(images, image)
+
+		}
+		fmt.Println(len(images))
+
+		var res = map[string]interface{}{"data": images, "size": len(images)}
+		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: res})
+	}
+}
+
+func GetImageById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		var image models.Picture
+		id := c.Param("id")
+		fmt.Println(id)
+		objId, _ := primitive.ObjectIDFromHex(id)
+		err := imageCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&image)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
+			return
+		}
+		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: map[string]interface{}{"data": image}})
+	}
+}

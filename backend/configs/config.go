@@ -44,6 +44,6 @@ func ConnectDB() *mongo.Client {
 var DB = ConnectDB()
 
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	collection := client.Database("golangAPI").Collection(collectionName)
+	collection := client.Database("example").Collection(collectionName)
 	return collection
 }
