@@ -1,17 +1,50 @@
-import React,{useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
+import axios from 'axios';
 const home = () => {
 
   const [date, setDate] = useState({
     startDate: new Date(),
     endDate: new Date().setMonth(new Date().getMonth() + 1),
   })
+  const [responseData, setResponseData] = useState([])
 
   const handleDateChange = (date) => {
     setDate(date)
 
     console.log(date)
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const API_ADDRESS = process.env.API_ADDRESS
+  console.log(API_ADDRESS)
+  const fetchData = async () => {
+    var data = '';
+
+    var config = {
+      method: 'get',
+      url: "http://oatwant.trueddns.com:61130"+'/car',
+      headers: {},
+      data: data
+    };
+
+
+    axios(config)
+      .then(function (response) {
+        // console.log(JSON.stringify(response.data.data));
+        setResponseData(response.data.data.data)
+        console.log(response.data.data.data)
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+  }
+
+
 
   return (
     <>
@@ -22,12 +55,12 @@ const home = () => {
         <div className="rounded bg-white h-40 shadow-sm"></div>
         <div className="rounded bg-white h-40 shadow-sm"></div>
 
-  
 
-        
+
+
       </div>
       <div className="grid lg:grid-cols-3 gap-2 mb-2">
-      
+
         <Datepicker
           value={date}
           onChange={handleDateChange}
@@ -55,40 +88,40 @@ const home = () => {
 
 
       </div>
-      
-      <div className="grid col-1 bg-white mb-20 shadow-sm overflow-y-auto h-screen">
 
-        <div className=" bg-white-50">
-          {/* Header */}
-
-          <section className="min-h-screen body-font text-gray-600 ">
-            <div className="container mx-auto px-5 py-10">
-              <div className="-m-4 flex flex-wrap">
+      <div className="grid col-1 bg-gray-50 mb-20 shadow-sm overflow-y-auto h-screen">
+        <div>
+          {/* Product List */}
+          <section className="py-10 bg-gray-50">
+            <div className="mx-auto grid max-w-24xl grid-cols-1 gap-6 p-6 sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4">
 
 
-                {
-                  Array.from({ length: 200 }, (_, i) => i + 1).map((item) => (
-                    <div key={item} className="w-full p-4 md:w-1/2 lg:w-1/4">
-                      <a className="relative block h-48 overflow-hidden rounded">
-                        <img alt="ecommerce" className="block h-full w-full object-cover object-center cursor-pointer" src="https://dummyimage.com/421x261" />
-                      </a>
-                      <div className="mt-4">
-                        <h3 className="title-font mb-1 text-xs tracking-widest text-gray-500">PROJECT</h3>
-                        <h2 className="title-font text-lg font-medium text-gray-900">{item}</h2>
-                        <p className="mt-1">01/09/2022</p>
-                      </div>
-                    </div>
-                  ))
-                }
+              {responseData.map((data, index) =>
+                // <div className="flex h-screen items-center justify-center bg-indigo-50 px-4">
+
+                // </div>
+                <div className="overflow-hidden rounded-xl bg-white shadow-md duration-200 hover:scale-105 hover:shadow-xl" key={data.id}>
+                  <img src={data.base64DefaultImg} alt="plant" className="h-auto w-full" />
+                  <div className="p-5">
+                    <p className="text-medium mb-5 text-gray-700">{data.imgName}</p>
+                    <p className="text-medium mb-5 text-gray-700">Location : {data.location} ,Thailand</p>
+                    <p className="text-medium mb-5 text-gray-700">CreateAt : {data.createAt}</p>
+                    <a >
+                      <button className="w-full rounded-md bg-indigo-600  py-2 text-indigo-100 hover:bg-indigo-500 hover:shadow-md duration-75">See More</button>
+
+                    </a>
+                  </div>
+                </div>
+              )}
 
 
-              </div>
-            </div></section>
-          {/* Footer */}
-          <footer>
-            <p className="text-center  py-4 bg-white">Create By © YOTHIN INTHAVYXUP</p>
-          </footer>
+            </div>
+          </section>
+
         </div>
+
+
+
       </div>
     </>
   )
