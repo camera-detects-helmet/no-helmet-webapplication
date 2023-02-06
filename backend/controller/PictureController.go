@@ -5,6 +5,7 @@ import (
 	"detection-no-helmet-web-application/api/configs"
 	"detection-no-helmet-web-application/api/models"
 	"detection-no-helmet-web-application/api/responses"
+	"detection-no-helmet-web-application/api/services"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -45,18 +46,37 @@ func CreateImage() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, responses.DefaultResponse{StatusCode: http.StatusBadRequest, Message: "Bad Request validate required fields", Data: map[string]interface{}{"error": validationErr.Error()}})
 			return
 		}
-
 		loc, _ := time.LoadLocation("Asia/Bangkok")
 		_time := time.Now().In(loc)
-		newImg := models.Picture{
-			Id:               primitive.NewObjectID(),
-			Location:         imagesRequest.Location,
-			Base64DefaultImg: imagesRequest.Base64DefaultImg,
-			Base64RiderImg:   imagesRequest.Base64RiderImg,
-			ImgName:          imagesRequest.Location + "_" + _time.Format("02-01-2006 15:04:05"),
-			CreateAt:         _time,
-		}
+		imgDefaultName := imagesRequest.Location + "_" + _time.Format("02_01_2006_15_04_05") + "_default"
+		imgRiderName := imagesRequest.Location + "_" + _time.Format("02_01_2006_15_04_05") + "_rider"
+		pathSaveImg := "assets/images/"
 
+		var imageDefault = &models.SavePicture{
+			Base64: imagesRequest.Base64DefaultImg,
+			Name:   imgDefaultName,
+		}
+		var imageRider = &models.SavePicture{
+			Base64: imagesRequest.Base64RiderImg,
+			Name:   imgRiderName,
+		}
+		//create new image
+		services.SavePicture(imageDefault, imageRider, pathSaveImg)
+		uriPathDefaultImg := configs.EnvIP_PORT() + "/images/" + imgDefaultName + ".jpg"
+		uriPathRiderImg := configs.EnvIP_PORT() + "/images/" + imgRiderName + ".jpg"
+
+		fmt.Println(uriPathDefaultImg)
+		fmt.Println(uriPathRiderImg)
+
+		newImg := models.Picture{
+			Id:             primitive.NewObjectID(),
+			Location:       imagesRequest.Location,
+			PathDefaultImg: uriPathDefaultImg,
+			PathRiderImg:   uriPathRiderImg,
+			ImgName:        imagesRequest.Location + "_" + _time.Format("02-01-2006 15:04:05"),
+			CreateAt:       time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour(), _time.Minute(), _time.Second(), _time.Nanosecond(), loc),
+		}
+		fmt.Println(time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour(), _time.Minute(), _time.Second(), _time.Nanosecond(), loc))
 		result, err := imageCollection.InsertOne(ctx, newImg)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
