@@ -19,6 +19,29 @@ func EnvMongoURI() string {
 	return os.Getenv("MONGO_URI")
 }
 
+func EnvPort() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	return os.Getenv("PORT")
+}
+
+func EnvIP_PORT() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	return os.Getenv("IP_PORT")
+}
+func EnvIP() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	return os.Getenv("IP")
+}
+
 func ConnectDB() *mongo.Client {
 	// Set client options
 	clientOptions := options.Client().ApplyURI(EnvMongoURI())

@@ -3,6 +3,7 @@ package main
 import (
 	"detection-no-helmet-web-application/api/configs"
 	"detection-no-helmet-web-application/api/routes"
+	"detection-no-helmet-web-application/api/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,8 +13,11 @@ func main() {
 	configs.ConnectDB()
 
 	routes.SetupRoutes(router)
+	router.Static("/images", "assets/images")
 
-	err := router.Run(":8000")
+	services.CheckExistDir("assets")
+	err := router.Run(configs.EnvIP() + ":" + configs.EnvPort())
+
 	if err != nil {
 		return
 	}

@@ -1,61 +1,47 @@
 package services
 
 import (
-	"detection-no-helmet-web-application/api/responses"
+	"detection-no-helmet-web-application/api/models"
 	"encoding/base64"
 	"fmt"
 	"image"
-	"image/png"
+	"image/jpeg"
 	"log"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 )
 
-func SavePicture(base64 string, location string) interface{} {
-	newBase := strings.Replace(base64, "data:image/png;base64,", "", -1)
+func SavePicture(imgDefault *models.SavePicture, imgRider *models.SavePicture, path string) {
 
-	_, res := base64toPng(newBase, location)
-	//base64toJpg(base64, location)
-	resSuccess := responses.BaseSingleResponse{Status: 200, Message: "success", Value: res}
+	CheckExistDir(path)
+	base64toJpg(imgDefault.Base64, path, imgDefault.Name)
+	base64toJpg(imgRider.Base64, path, imgRider.Name)
 
-	return resSuccess
 }
 
-func base64toPng(dataBase64 string, location string) (bool, string) {
-	data := dataBase64
+func base64toJpg(data string, path string, name string) bool {
 
 	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(data))
 	m, formatString, err := image.Decode(reader)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	bounds := m.Bounds()
-	fmt.Println(bounds, formatString)
-	//univertity_17_11_2022_unixtime.png
+	fmt.Println("base64toJpg", bounds, formatString)
+
 	//Encode from image format to writer
-	t := time.Now()
-	year, month, day := t.Date()
-	hour := strconv.FormatInt(int64(t.Hour()), 10)
-	minute := strconv.FormatInt(int64(t.Minute()), 10)
-	second := strconv.FormatInt(int64(t.Second()), 10)
-	timestamp := hour + "_" + minute + "_" + second
-	pngFilename := location + "_" + strconv.FormatInt(int64(day), 10) + "_" + strconv.FormatInt(int64(month), 10) + "_" + strconv.FormatInt(int64(year), 10) + "_" + timestamp + ".png"
-	f, err := os.OpenFile("assets/images/"+pngFilename, os.O_WRONLY|os.O_CREATE, 0777)
+	pngFilename := path + "/" + name + ".jpg"
+	f, err := os.OpenFile(pngFilename, os.O_WRONLY|os.O_CREATE, 0777)
 	if err != nil {
 		log.Fatal(err)
-		return false, "Error"
+		return false
 	}
 
-	err = png.Encode(f, m)
+	err = jpeg.Encode(f, m, &jpeg.Options{Quality: 75})
 	if err != nil {
 		log.Fatal(err)
-		return false, "Error"
+		return false
 	}
-	fmt.Println("Png file", pngFilename, "created")
-
-	return true, pngFilename
-
+	fmt.Println("Jpg file", pngFilename, "created")
+	return true
 }
