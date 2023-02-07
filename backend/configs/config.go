@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/net/context"
 	"log"
+	"net"
 	"os"
 )
 
@@ -19,6 +20,22 @@ func EnvMongoURI() string {
 	return os.Getenv("MONGO_URI")
 }
 
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
+}
+
 func EnvPort() string {
 	err := godotenv.Load()
 	if err != nil {
@@ -27,13 +44,6 @@ func EnvPort() string {
 	return os.Getenv("PORT")
 }
 
-func EnvIP_PORT() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-	return os.Getenv("IP_PORT")
-}
 func EnvIP() string {
 	err := godotenv.Load()
 	if err != nil {

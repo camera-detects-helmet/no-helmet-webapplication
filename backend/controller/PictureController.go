@@ -62,8 +62,8 @@ func CreateImage() gin.HandlerFunc {
 		}
 		//create new image
 		services.SavePicture(imageDefault, imageRider, pathSaveImg)
-		uriPathDefaultImg := configs.EnvIP_PORT() + "/images/" + imgDefaultName + ".jpg"
-		uriPathRiderImg := configs.EnvIP_PORT() + "/images/" + imgRiderName + ".jpg"
+		uriPathDefaultImg := "http://" + configs.GetLocalIP() + ":" + configs.EnvPort() + "/images/" + imgDefaultName + ".jpg"
+		uriPathRiderImg := "http://" + configs.GetLocalIP() + ":" + configs.EnvPort() + "/images/" + imgRiderName + ".jpg"
 
 		fmt.Println(uriPathDefaultImg)
 		fmt.Println(uriPathRiderImg)
