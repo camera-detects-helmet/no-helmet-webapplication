@@ -6,7 +6,10 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine) {
-	router.POST("/car", controller.CreateImage())
-	router.GET("/car", controller.GetAllImage())
-	router.GET("/car/:id", controller.GetImageById())
+	router.POST("/image", controller.CreateImage())
+	router.GET("/image", controller.GetAllImage())
+	router.GET("/image/:id", controller.GetImageById())
+	router.GET("/image/date/:date", controller.GetImageByDate())
+	router.GET("/image/dater/:start/:end", controller.GetImageByDateRange())
+	router.GET("/image/location/:location", controller.GetImageByLocation())
 }
