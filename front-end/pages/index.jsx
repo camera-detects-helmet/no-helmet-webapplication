@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
 import axios from 'axios';
+import Link from 'next/link'
+
 const home = () => {
 
   const [date, setDate] = useState({
@@ -12,7 +14,6 @@ const home = () => {
   const handleDateChange = (date) => {
     setDate(date)
 
-    console.log(date)
   }
 
   useEffect(() => {
@@ -20,13 +21,12 @@ const home = () => {
   }, [])
 
   const API_ADDRESS = process.env.API_ADDRESS
-  console.log(API_ADDRESS)
   const fetchData = async () => {
     var data = '';
 
     var config = {
       method: 'get',
-      url: "http://oatwant.trueddns.com:61130"+'/car',
+      url: "http://10.20.46.27:8081"+'/image',
       headers: {},
       data: data
     };
@@ -34,9 +34,7 @@ const home = () => {
 
     axios(config)
       .then(function (response) {
-        // console.log(JSON.stringify(response.data.data));
         setResponseData(response.data.data.data)
-        console.log(response.data.data.data)
       })
       .catch(function (error) {
         console.log(error);
@@ -101,15 +99,15 @@ const home = () => {
 
                 // </div>
                 <div className="overflow-hidden rounded-xl bg-white shadow-md duration-200 hover:scale-105 hover:shadow-xl" key={data.id}>
-                  <img src={data.base64DefaultImg} alt="plant" className="h-auto w-full" />
+                  <img src={data.path_default_img} alt="plant" className="h-auto w-full" />
                   <div className="p-5">
                     <p className="text-medium mb-5 text-gray-700">{data.imgName}</p>
                     <p className="text-medium mb-5 text-gray-700">Location : {data.location} ,Thailand</p>
                     <p className="text-medium mb-5 text-gray-700">CreateAt : {data.createAt}</p>
-                    <a >
+                    <Link href={`/content_detail/${data.id}`}>
                       <button className="w-full rounded-md bg-indigo-600  py-2 text-indigo-100 hover:bg-indigo-500 hover:shadow-md duration-75">See More</button>
 
-                    </a>
+                    </Link>
                   </div>
                 </div>
               )}
