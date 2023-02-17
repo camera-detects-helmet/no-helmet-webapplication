@@ -8,8 +8,28 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8081:8081
+    depends_on:
+      - database
     environment:
       - PORT=8081
       - MONGO_URI=${MONGO_URI}
+      - HOST_ADDRESS=${HOST_ADDRESS}
     volumes:
       - ./assets:/app/assets
+
+  database:
+    image: mongo:6.0
+    container_name: no-helmet-database
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+
+volumes:
+  mongodb_data:
+  mongodb_config:
