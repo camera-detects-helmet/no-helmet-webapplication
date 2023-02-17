@@ -54,6 +54,19 @@ func EnvPort() string {
 	return os.Getenv("PORT")
 }
 
+func EnvHostAddress() string {
+	value , ok := os.LookupEnv("HOST_ADDRESS")
+	if (ok == true) {
+		return value
+	}
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	return os.Getenv("HOST_ADDRESS")
+}
+
 
 
 func ConnectDB() *mongo.Client {
