@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  api:
+    image: no-helmet-api:1.0
+    container_name: no-helmet-api
+    ports:
+      - 8081:8081
+    networks:
+      - backend
+    depends_on:
+      - database
+    environment:
+      - PORT=8081
+      - MONGO_URI=${MONGO_URI}
+    volumes:
+      - api_data:/app/assets
+
+  database:
+    image: mongo:6.0
+    container_name: no-helmet-database
+    ports:
+      - 27017:27017
+    networks:
+      - backend
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+
+networks:
+  backend:
+    name: no-helmet-backend
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    name: no-helmet-mongodb-data
+  mongodb_config:
+    name: no-helmet-mongodb-data
+  api_data:
+    name: no-helmet-api-data
