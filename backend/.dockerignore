@@ -1,0 +1,8 @@
+assets/
+.dockerignore
+.env
+.env.example
+.gitignore
+.tool-versions
+docker-compose.yml
+Dockerfile
