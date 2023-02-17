@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  api:
+    container_name: no-helmet-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    environment:
+      - PORT=8081
+      - MONGO_URI=${MONGO_URI}
+    volumes:
+      - ./assets:/app/assets
