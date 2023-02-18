@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,6 +9,7 @@ import (
 	"net"
 	"os"
 )
+
 
 // LoadEnv loads the environment variables from .env file
 func EnvMongoURI() string {
@@ -87,7 +87,7 @@ func ConnectDB() *mongo.Client {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	log.Print("[SUCCESS] Connected to MongoDB!")
 	return client
 }
 

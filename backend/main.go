@@ -4,12 +4,18 @@ import (
 	"detection-no-helmet-web-application/api/configs"
 	"detection-no-helmet-web-application/api/routes"
 	"detection-no-helmet-web-application/api/services"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
+
 func main() {
+		    
+	
+
+
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{

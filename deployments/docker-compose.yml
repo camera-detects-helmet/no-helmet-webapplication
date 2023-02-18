@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    image: no-helmet-api:${API_VERSION}
+    image: gcr.io/helmet-detection-377023/no-helmet-api:${API_VERSION}
     container_name: no-helmet-api
     ports:
       - 8081:8081

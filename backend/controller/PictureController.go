@@ -6,9 +6,8 @@ import (
 	"detection-no-helmet-web-application/api/models"
 	"detection-no-helmet-web-application/api/responses"
 	"detection-no-helmet-web-application/api/services"
-	"fmt"
+	"log"
 	"net/http"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -40,7 +39,6 @@ func CreateImage() gin.HandlerFunc {
 		var imagesRequest models.PictureRequest
 		defer cancel()
 
-		fmt.Println(imagesRequest)
 
 		//validate the request body
 		if err := c.BindJSON(&imagesRequest); err != nil {
@@ -69,11 +67,10 @@ func CreateImage() gin.HandlerFunc {
 		}
 		//create new image
 		services.SavePicture(imageDefault, imageRider, pathSaveImg)
+
 		uriPathDefaultImg := "http://" + configs.EnvHostAddress() + ":" + configs.EnvPort() + "/images/" + imgDefaultName + ".jpg"
 		uriPathRiderImg := "http://" + configs.EnvHostAddress() + ":" + configs.EnvPort() + "/images/" + imgRiderName + ".jpg"
 
-		fmt.Println(uriPathDefaultImg)
-		fmt.Println(uriPathRiderImg)
 
 		newImg := models.Picture{
 			Id:             primitive.NewObjectID(),
@@ -81,15 +78,17 @@ func CreateImage() gin.HandlerFunc {
 			PathDefaultImg: uriPathDefaultImg,
 			PathRiderImg:   uriPathRiderImg,
 			ImgName:        imagesRequest.Location + "_" + _time.Format("02-01-2006 15:04:05"),
-			CreateAt:       time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour(), _time.Minute(), _time.Second(), _time.Nanosecond(), loc),
+			CreateAt:       time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour()+7, _time.Minute(), _time.Second(), _time.Nanosecond(), loc),
 		}
-		fmt.Println(time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour(), _time.Minute(), _time.Second(), _time.Nanosecond(), loc))
+
+		// fmt.Println(time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour(), _time.Minute(), _time.Second(), _time.Nanosecond(), loc))
 		result, err := imageCollection.InsertOne(ctx, newImg)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
 			return
 		}
 		c.JSON(http.StatusCreated, responses.DefaultResponse{StatusCode: http.StatusCreated, Message: "Success", Data: map[string]interface{}{"data": result}})
+		log.Println("[SUCCESS] Create Image Success")
 	}
 }
 
@@ -125,10 +124,10 @@ func GetAllImage() gin.HandlerFunc {
 			images = append(images, image)
 
 		}
-		fmt.Println(len(images))
 
 		var res = map[string]interface{}{"data": images, "size": len(images)}
 		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: res})
+		log.Print("[SUCCESS] Get All Image")
 	}
 }
 
@@ -138,7 +137,6 @@ func GetImageById() gin.HandlerFunc {
 		defer cancel()
 
 		id := c.Param("id")
-		fmt.Println(id)
 		objId, _ := primitive.ObjectIDFromHex(id)
 		err := imageCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&image)
 		if err != nil {
@@ -146,6 +144,7 @@ func GetImageById() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: map[string]interface{}{"data": image}})
+		log.Print("[SUCCESS] Get Image By Id")
 	}
 }
 
@@ -155,7 +154,6 @@ func GetImageByLocation() gin.HandlerFunc {
 		defer cancel()
 
 		location := c.Param("location")
-		fmt.Println(location)
 		cursor, err := imageCollection.Find(ctx, bson.M{"location": location})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
@@ -183,6 +181,7 @@ func GetImageByLocation() gin.HandlerFunc {
 
 		var res = map[string]interface{}{"data": images, "size": len(images)}
 		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: res})
+		log.Println("[SUCCESS] Get Image By Location")
 	}
 }
 
@@ -193,15 +192,19 @@ func GetImageByDate() gin.HandlerFunc {
 
 		newLst := strings.Split(c.Param("date"), "-")
 
-		fmt.Println(newLst[0], newLst[1], newLst[2], reflect.TypeOf(newLst[0]), reflect.TypeOf(newLst[1]), reflect.TypeOf(newLst[2]))
 		year, _ := strconv.ParseInt(newLst[2], 10, 0)
 		month, _ := strconv.ParseInt(newLst[1], 10, 0)
 		day, _ := strconv.ParseInt(newLst[0], 10, 0)
 
-		date := time.Date(int(year), time.Month(month), int(day), 0, 0, 0, 0, time.UTC)
-		fmt.Println(date)
+		startDay := time.Date(int(year), time.Month(month), int(day), 0, 0, 0, 0, time.UTC)
+		endOfDay := time.Date(int(year), time.Month(month), int(day), 23, 59, 59, 0, time.UTC)
 
-		cursor, err := imageCollection.Find(ctx, bson.M{"createat": bson.M{"$gte": date}})
+		filter := bson.M{"createat": bson.M{
+			"$gte": startDay,
+			"$lt":  endOfDay,
+		}}
+
+		cursor, err := imageCollection.Find(ctx, filter)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})
 			return
@@ -228,9 +231,14 @@ func GetImageByDate() gin.HandlerFunc {
 
 		}
 
+		if len(images) == 0 {
+			c.JSON(http.StatusNotFound, responses.DefaultResponse{StatusCode: http.StatusNotFound, Message: "Not Found", Data: map[string]interface{}{"error": "Not Found"}})
+			return
+		}
+
 		var res = map[string]interface{}{"data": images, "size": len(images)}
 		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: res})
-
+		log.Println("[SUCCESS] Get Image By Date Success")
 	}
 }
 
@@ -300,7 +308,7 @@ func GetImageByDateRange() gin.HandlerFunc {
 
 		var res = map[string]interface{}{"data": images, "size": len(images)}
 		c.JSON(http.StatusOK, responses.DefaultResponse{StatusCode: http.StatusOK, Message: "Success", Data: res})
-
+		log.Printf("[SUCCESS] Get Image By Date Range")
 	}
 
 }
