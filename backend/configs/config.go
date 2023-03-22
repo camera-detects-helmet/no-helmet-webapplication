@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -11,11 +10,17 @@ import (
 	"os"
 )
 
+
 // LoadEnv loads the environment variables from .env file
 func EnvMongoURI() string {
+	value , ok := os.LookupEnv("MONGO_URI")
+	if (ok == true) {
+		return value
+	}
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("[ERROR] Environment variable {MONGO_URI} not found!")
 	}
 	return os.Getenv("MONGO_URI")
 }
@@ -37,20 +42,32 @@ func GetLocalIP() string {
 }
 
 func EnvPort() string {
+	value , ok := os.LookupEnv("PORT")
+	if (ok == true) {
+		return value
+	}
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("[ERROR] Environment variable {PORT} not found!")
 	}
 	return os.Getenv("PORT")
 }
 
-func EnvIP() string {
+func EnvHostAddress() string {
+	value , ok := os.LookupEnv("HOST_ADDRESS")
+	if (ok == true) {
+		return value
+	}
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("[ERROR] Environment variable {HOST_ADDRESS} not found!")
 	}
-	return os.Getenv("IP")
+	return os.Getenv("HOST_ADDRESS")
 }
+
+
 
 func ConnectDB() *mongo.Client {
 	// Set client options
@@ -70,7 +87,7 @@ func ConnectDB() *mongo.Client {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	log.Print("[SUCCESS] Connected to MongoDB!")
 	return client
 }
 

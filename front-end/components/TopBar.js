@@ -23,7 +23,7 @@ export default function TopBar({ showNav, setShowNav }) {
           onClick={() => setShowNav(!showNav)}
         />
       </div>
-      <div className="flex items-center pr-4 md:pr-16">
+      {/* <div className="flex items-center pr-4 md:pr-16">
         <Popover className="relative">
           <Popover.Button className="outline-none mr-5 md:mr-8 cursor-pointer text-gray-700">
             <BellIcon className="h-6 w-6" />
@@ -161,7 +161,7 @@ export default function TopBar({ showNav, setShowNav }) {
             </Menu.Items>
           </Transition>
         </Menu>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,48 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
-import axios from 'axios';
-const home = () => {
+import Link from 'next/link'
+
+import { getAllImages } from '../services'
+
+export default function home ({images}) {
 
   const [date, setDate] = useState({
     startDate: new Date(),
     endDate: new Date().setMonth(new Date().getMonth() + 1),
   })
-  const [responseData, setResponseData] = useState([])
 
   const handleDateChange = (date) => {
     setDate(date)
 
-    console.log(date)
   }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const API_ADDRESS = process.env.API_ADDRESS
-  console.log(API_ADDRESS)
-  const fetchData = async () => {
-    var data = '';
-
-    var config = {
-      method: 'get',
-      url: "http://oatwant.trueddns.com:61130"+'/car',
-      headers: {},
-      data: data
-    };
-
-
-    axios(config)
-      .then(function (response) {
-        // console.log(JSON.stringify(response.data.data));
-        setResponseData(response.data.data.data)
-        console.log(response.data.data.data)
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-
-  }
+  console.log(process.env.API_ADDRESS)
 
 
 
@@ -96,20 +69,20 @@ const home = () => {
             <div className="mx-auto grid max-w-24xl grid-cols-1 gap-6 p-6 sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4">
 
 
-              {responseData.map((data, index) =>
+              {images.map((data, index) =>
                 // <div className="flex h-screen items-center justify-center bg-indigo-50 px-4">
 
                 // </div>
                 <div className="overflow-hidden rounded-xl bg-white shadow-md duration-200 hover:scale-105 hover:shadow-xl" key={data.id}>
-                  <img src={data.base64DefaultImg} alt="plant" className="h-auto w-full" />
+                  <img src={data.path_default_img} alt="plant" className="h-auto w-full" />
                   <div className="p-5">
                     <p className="text-medium mb-5 text-gray-700">{data.imgName}</p>
                     <p className="text-medium mb-5 text-gray-700">Location : {data.location} ,Thailand</p>
                     <p className="text-medium mb-5 text-gray-700">CreateAt : {data.createAt}</p>
-                    <a >
+                    <Link href={`/content_detail/${data.id}`}>
                       <button className="w-full rounded-md bg-indigo-600  py-2 text-indigo-100 hover:bg-indigo-500 hover:shadow-md duration-75">See More</button>
 
-                    </a>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -124,7 +97,21 @@ const home = () => {
 
       </div>
     </>
+   
   )
 }
 
-export default home
+
+
+export async function getStaticProps() {
+  const response = (await getAllImages()) || [];
+  
+
+  return {
+    props: {
+      images: response.data.data.data,
+    },
+
+  }
+}
+

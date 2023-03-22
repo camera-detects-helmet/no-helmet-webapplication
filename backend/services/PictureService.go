@@ -3,7 +3,6 @@ package services
 import (
 	"detection-no-helmet-web-application/api/models"
 	"encoding/base64"
-	"fmt"
 	"image"
 	"image/jpeg"
 	"log"
@@ -22,12 +21,11 @@ func SavePicture(imgDefault *models.SavePicture, imgRider *models.SavePicture, p
 func base64toJpg(data string, path string, name string) bool {
 
 	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(data))
-	m, formatString, err := image.Decode(reader)
+	m, _, err := image.Decode(reader)
 	if err != nil {
 		log.Fatal(err)
 	}
-	bounds := m.Bounds()
-	fmt.Println("base64toJpg", bounds, formatString)
+
 
 	//Encode from image format to writer
 	pngFilename := path + "/" + name + ".jpg"
@@ -42,6 +40,6 @@ func base64toJpg(data string, path string, name string) bool {
 		log.Fatal(err)
 		return false
 	}
-	fmt.Println("Jpg file", pngFilename, "created")
+	log.Printf("[SUCCESS] Jpg file " +  pngFilename + " created")
 	return true
 }
