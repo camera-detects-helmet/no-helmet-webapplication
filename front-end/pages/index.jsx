@@ -1,46 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
-import axios from 'axios';
 import Link from 'next/link'
 
-const home = () => {
+import { getAllImages } from '../services'
+
+export default function home ({images}) {
 
   const [date, setDate] = useState({
     startDate: new Date(),
     endDate: new Date().setMonth(new Date().getMonth() + 1),
   })
-  const [responseData, setResponseData] = useState([])
 
   const handleDateChange = (date) => {
     setDate(date)
 
   }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const API_ADDRESS = process.env.API_ADDRESS
-  const fetchData = async () => {
-    var data = '';
-
-    var config = {
-      method: 'get',
-      url: "http://10.20.46.27:8081"+'/image',
-      headers: {},
-      data: data
-    };
-
-
-    axios(config)
-      .then(function (response) {
-        setResponseData(response.data.data.data)
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-
-  }
+  console.log(process.env.API_ADDRESS)
 
 
 
@@ -94,7 +69,7 @@ const home = () => {
             <div className="mx-auto grid max-w-24xl grid-cols-1 gap-6 p-6 sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4">
 
 
-              {responseData.map((data, index) =>
+              {images.map((data, index) =>
                 // <div className="flex h-screen items-center justify-center bg-indigo-50 px-4">
 
                 // </div>
@@ -122,7 +97,21 @@ const home = () => {
 
       </div>
     </>
+   
   )
 }
 
-export default home
+
+
+export async function getStaticProps() {
+  const response = (await getAllImages()) || [];
+  
+
+  return {
+    props: {
+      images: response.data.data.data,
+    },
+
+  }
+}
+
