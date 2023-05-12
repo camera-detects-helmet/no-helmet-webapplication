@@ -12,7 +12,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
         <picture>
           <img
             className="w-62 h-auto"
-            src="/NHlogo.png"
+            src="/knocknae_logo.png"
             alt="company logo"
           />
         </picture>
@@ -35,7 +35,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
             </div>
           </div>
         </Link>
-        <Link href="/account">
+        {/* <Link href="/account">
           <div
             className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
               router.pathname == "/account"
@@ -66,7 +66,7 @@ const SideBar = forwardRef(({ showNav }, ref) => {
               <p>Billing</p>
             </div>
           </div>
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

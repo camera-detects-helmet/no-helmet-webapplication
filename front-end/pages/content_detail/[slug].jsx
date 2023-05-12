@@ -1,6 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getImageById, getAllImages } from "../../services";
+import Head from 'next/head'
+// import useDownloader from "react-use-downloader";
+
 
 const Detail = ({ images }) => {
 
@@ -10,11 +13,32 @@ const Detail = ({ images }) => {
     return <div>Loading...</div>;
   }
 
+  // const [download, { loading, error }] = useDownloader();
+
+  // const handleDownload = () => {
+  //   download(images.path_default_img);
+  // };
+
+  // console.log(`Downloading ${images.path_default_img}...`);
+
+  // const { size, elapsed, percentage, download,
+  //   cancel, error, isInProgress } =
+  //   useDownloader();
+  // console.log(images.path_default_img.split('/')[4]);
+  // console.log(images.path_rider_img.split('/')[4]);
+
+
+
+
+
 
 
   return (
     <>
-      <p className="text-gray-700 text-3xl mb-16 font-bold">Detail: {images.id}</p>
+      <Head> 
+        <title>Content Detail</title>
+
+     </Head>
 
       <div className="grid col-1 bg-gray-50 mb-20 shadow-sm overflow-y-auto h-screen">
 
@@ -39,11 +63,15 @@ const Detail = ({ images }) => {
 
               </div>
               <div>
-                <div className="inline-block align-bottom">
-                  {/* <button className="bg-yellow-300 opacity-75 hover:opacity-100 text-yellow-900 hover:text-gray-900 rounded-full px-10 py-2 font-semibold m-2 w-full"><i className="mdi mdi-cart -ml-2 mr-2" /> Download full-image </button> */}
-                  {/* <button className="bg-yellow-300 opacity-75 hover:opacity-100 text-yellow-900 hover:text-gray-900 rounded-full px-10 py-2 font-semibold m-2 w-full"><i className="mdi mdi-cart -ml-2 mr-2" /> Download rider-imgage</button> */}
+                {/* <div className="inline-block align-bottom">
+                  <button onClick={() => download(images.path_default_img, images.path_default_img.split('/')[4])} className="bg-yellow-300 opacity-75 hover:opacity-100 text-yellow-900 hover:text-gray-900 rounded-full px-10 py-2 font-semibold m-2 w-full">
+                    <i className="mdi mdi-cart -ml-2 mr-2" /> Download full-image
+                  </button>
+                  <button className="bg-yellow-300 opacity-75 hover:opacity-100 text-yellow-900 hover:text-gray-900 rounded-full px-10 py-2 font-semibold m-2 w-full">
+                    <i className="mdi mdi-cart -ml-2 mr-2" /> Download rider-imgage
+                  </button>
 
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -61,7 +89,6 @@ export default Detail;
 export async function getStaticProps({ params }) {
 
   const response = await getImageById(params.slug);
-  
   return {
     props: {
       images: response.data.data.data,

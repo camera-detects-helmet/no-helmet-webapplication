@@ -10,12 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 func main() {
-		    
-	
-
-
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -26,7 +21,7 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	
+
 	//database connection
 	configs.ConnectDB()
 

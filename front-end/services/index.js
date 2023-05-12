@@ -2,7 +2,6 @@ import axiosConfig from '../config/axiosConfig';
 
 export const getAllImages = () => {
     var data = axiosConfig.get('/image')
-
     return data;
 
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
 import Link from 'next/link'
+import Head from 'next/head'
 
 import { getAllImages } from '../services'
 
@@ -15,24 +16,65 @@ export default function home ({images}) {
     setDate(date)
 
   }
-  console.log(process.env.API_ADDRESS)
 
 
 
   return (
     <>
+      <Head>
+        <title>NokNae</title>
+      </Head>
       <p className="text-gray-700 text-3xl mb-16 font-bold">Dashboard</p>
 
-      <div className="grid lg:grid-cols-3 gap-5 mb-5">
-        <div className="rounded bg-white h-40 shadow-sm"></div>
-        <div className="rounded bg-white h-40 shadow-sm"></div>
-        <div className="rounded bg-white h-40 shadow-sm"></div>
+      {/* <div className="grid lg:grid-cols-3 gap-5 mb-5">
+        <div className="rounded bg-white h-40 shadow-sm">
+          <div className="grid grid-rows-2 gap-2 p-10">
+            <div>
+              <p className='text-xl'>
+                Today
+              </p>
+            </div>
+            <div>
+              <p className='text-center'>
+                number of today
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="rounded bg-white h-40 shadow-sm">
+        <div className="grid grid-rows-2 gap-2 p-10">
+            <div>
+              <p className='text-xl'>
+                This month
+              </p>
+            </div>
+            <div>
+              <p className='text-center'>
+                number of this month
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="rounded bg-white h-40 shadow-sm">
+        <div className="grid grid-rows-2 gap-2 p-10">
+            <div>
+              <p className='text-xl'>
+                Total
+              </p>
+            </div>
+            <div>
+              <p className='text-center'>
+                number of Total
+              </p>
+            </div>
+          </div>
+        </div> 
 
 
 
 
-      </div>
-      <div className="grid lg:grid-cols-3 gap-2 mb-2">
+       </div> */}
+      {/* <div className="grid lg:grid-cols-3 gap-2 mb-2">
 
         <Datepicker
           value={date}
@@ -60,7 +102,7 @@ export default function home ({images}) {
 
 
 
-      </div>
+      </div> */}
 
       <div className="grid col-1 bg-gray-50 mb-20 shadow-sm overflow-y-auto h-screen">
         <div>
@@ -105,11 +147,11 @@ export default function home ({images}) {
 
 export async function getStaticProps() {
   const response = (await getAllImages()) || [];
-  
+
 
   return {
     props: {
-      images: response.data.data.data,
+      images: response.data.data.data.reverse(),
     },
 
   }
