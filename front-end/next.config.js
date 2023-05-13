@@ -5,6 +5,7 @@ const nextConfig = {
   experimental: {
     largePageDataBytes: 128 * 100000,
   },
+  output: 'standalone',
 }
 
 module.exports = nextConfig
