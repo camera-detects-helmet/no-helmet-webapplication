@@ -68,9 +68,10 @@ func CreateImage() gin.HandlerFunc {
 		//create new image
 		services.SavePicture(imageDefault, imageRider, pathSaveImg)
 
-		uriPathDefaultImg := "http://" + configs.EnvHostAddress() + ":" + configs.EnvPort() + "/images/" + imgDefaultName + ".jpg"
-		uriPathRiderImg := "http://" + configs.EnvHostAddress() + ":" + configs.EnvPort() + "/images/" + imgRiderName + ".jpg"
-
+		// uriPathDefaultImg := "http://" + configs.EnvHostAddress() + ":" + configs.EnvPort() + "/images/" + imgDefaultName + ".jpg"
+		// uriPathRiderImg := "http://" + configs.EnvHostAddress() + ":" + configs.EnvPort() + "/images/" + imgRiderName + ".jpg"
+		uriPathDefaultImg := configs.EnvHostAddress() + "/images/" + imgDefaultName + ".jpg"
+		uriPathRiderImg := configs.EnvHostAddress() + "/images/" + imgRiderName + ".jpg"
 
 		newImg := models.Picture{
 			Id:             primitive.NewObjectID(),
@@ -81,7 +82,6 @@ func CreateImage() gin.HandlerFunc {
 			CreateAt:       time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour()+7, _time.Minute(), _time.Second(), _time.Nanosecond(), loc),
 		}
 
-		// fmt.Println(time.Date(_time.Year(), _time.Month(), _time.Day(), _time.Hour(), _time.Minute(), _time.Second(), _time.Nanosecond(), loc))
 		result, err := imageCollection.InsertOne(ctx, newImg)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.DefaultResponse{StatusCode: http.StatusInternalServerError, Message: "Internal Server Error", Data: map[string]interface{}{"error": err.Error()}})

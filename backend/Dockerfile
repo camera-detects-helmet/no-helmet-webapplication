@@ -12,4 +12,5 @@ RUN apk --no-cache add ca-certificates libc6-compat tzdata
 ENV TZ=Asia/Bangkok
 WORKDIR /app/
 COPY --from=build-stage /app/server .
+EXPOSE 80
 CMD ["./server"]  
