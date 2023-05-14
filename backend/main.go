@@ -29,7 +29,7 @@ func main() {
 	router.Static("/images", "assets/images")
 
 	services.CheckExistDir("assets")
-	err := router.Run(configs.GetLocalIP() + ":" + configs.EnvPort())
+	err := router.Run(":8080")
 
 	if err != nil {
 		return

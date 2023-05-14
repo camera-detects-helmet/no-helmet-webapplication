@@ -7,11 +7,11 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8081:8081
+      - 8081:80
     depends_on:
       - database
     environment:
-      - PORT=8081
+      - PORT=80
       - MONGO_URI=${MONGO_URI}
       - HOST_ADDRESS=${HOST_ADDRESS}
     volumes:
