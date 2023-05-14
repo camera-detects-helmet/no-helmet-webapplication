@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
 import Link from 'next/link'
 import Head from 'next/head'
+import moment from 'moment/moment'
 
 import { getAllImages } from '../services'
 
@@ -119,8 +120,8 @@ export default function home ({images}) {
                   <img src={data.path_default_img} alt="plant" className="h-auto w-full" />
                   <div className="p-5">
                     <p className="text-medium mb-5 text-gray-700">{data.imgName}</p>
-                    <p className="text-medium mb-5 text-gray-700">Location : {data.location} ,Thailand</p>
-                    <p className="text-medium mb-5 text-gray-700">CreateAt : {data.createAt}</p>
+                    <p className="text-medium mb-5 text-gray-700">Location : {data.location}</p>
+                    <p className="text-medium mb-5 text-gray-700">Date : {moment(data.createAt).format('MMMM Do YYYY, h:mm:ss a')}</p>
                     <Link href={`/content_detail/${data.id}`}>
                       <button className="w-full rounded-md bg-indigo-600  py-2 text-indigo-100 hover:bg-indigo-500 hover:shadow-md duration-75">See More</button>
 

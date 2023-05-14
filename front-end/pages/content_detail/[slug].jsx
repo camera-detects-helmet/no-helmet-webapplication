@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getImageById, getAllImages } from "../../services";
 import Head from 'next/head'
+import moment from "moment";
 // import useDownloader from "react-use-downloader";
 
 
@@ -59,7 +60,7 @@ const Detail = ({ images }) => {
               <div className="mb-10">
                 <h1 className="font-bold  mb-5"> Image Name : {images.imgName}</h1>
                 <p className="text-sm">Location : {images.location}</p>
-                <p className="text-sm">Date : {images.createAt}</p>
+                <p className="text-sm">Date : {moment(images.createAt).format('MMMM Do YYYY, h:mm:ss a')}</p>
 
               </div>
               <div>
