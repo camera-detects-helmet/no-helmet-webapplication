@@ -5,7 +5,7 @@ import axios from 'axios';
 // Next we make an 'instance' of it
 const instance = axios.create({
     // .. where we make our configurations
-    baseURL: process.env.API_ADDRESS,
+    baseURL: process.env.API_ADDRESS || "http://localhost:8080"
 });
 
 // instance.defaults.headers.common['Authorization'] = 'AUTH TOKEN FROM INSTANCE';
